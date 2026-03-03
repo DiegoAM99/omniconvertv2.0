@@ -1,0 +1,130 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String?
+  password      String?   // Nullable for OAuth users
+  role          String    @default("user") // 'user' | 'admin'
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  conversions   Conversion[]
+  subscription  Subscription?
+  usageQuotas   UsageQuota[]
+
+  @@index([email])
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Subscription {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  tier                  String   @default("free") // 'free' | 'pro'
+  status                String   @default("active") // 'active' | 'canceled' | 'past_due' | 'trialing'
+  paddleSubscriptionId  String?  @unique
+  currentPeriodStart    DateTime?
+  currentPeriodEnd      DateTime?
+  cancelAtPeriodEnd     Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([paddleSubscriptionId])
+}
+
+model Conversion {
+  id                String   @id @default(uuid())
+  userId            String?  // Nullable for anonymous conversions
+  status            String   @default("pending") // 'pending' | 'processing' | 'completed' | 'failed'
+  inputFormat       String
+  outputFormat      String
+  inputFileUrl      String
+  outputFileUrl     String?
+  inputFileSize     BigInt
+  outputFileSize    BigInt?
+  error             String?  @db.Text
+  errorMessage      String?  @db.Text
+  processingTimeMs  Int?
+  options           Json?    // Conversion options (quality, OCR, etc.)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([expiresAt])
+}
+
+model UsageQuota {
+  id              String   @id @default(uuid())
+  userId          String
+  date            DateTime @db.Date
+  conversionsCount Int     @default(0)
+  bytesProcessed  BigInt   @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}

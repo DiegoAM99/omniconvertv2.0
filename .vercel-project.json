@@ -1,0 +1,26 @@
+{
+  "name": "omniconvert-web",
+  "version": "1.0.0",
+  "rootDir": "apps/web",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "public": false,
+  "regions": ["iad1"],
+  "env": {
+    "NEXTAUTH_SECRET": {
+      "type": "secret",
+      "value": "@nextauth-secret"
+    },
+    "NEXTAUTH_URL": {
+      "type": "system",
+      "value": "VERCEL_URL"
+    },
+    "NEXT_PUBLIC_API_URL": {
+      "type": "secret",
+      "value": "@api-url"
+    }
+  }
+}
