@@ -18,6 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.490.0",
     "@aws-sdk/s3-request-presigner": "^3.490.0",
+    "@azure/storage-blob": "^12.31.0",
     "@omniconvert/types": "*",
     "@omniconvert/utils": "*",
     "@prisma/client": "^5.8.0",
