@@ -3,7 +3,7 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'OmniConvert v2.0 - DEPLOYMENT TEST',
+  title: 'OmniConvert - Universal File Conversion Platform',
   description: 'Convert documents, images, audio, and video files with intelligent format detection.',
 };
 
@@ -18,10 +18,18 @@ export default function RootLayout({
         <Providers>
           <main className="flex-grow">{children}</main>
         </Providers>
-        <footer className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-red-600 bg-red-600 text-white py-8 w-full shadow-2xl">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-xl font-bold">
-              🔴 INLINE FOOTER TEST 🔴 Developed by: Diego Álvarez Medrano
+        <footer className="border-t border-gray-200 bg-white mt-auto">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <p className="text-center text-sm text-gray-600">
+              Developed by:{' '}
+              <a
+                href="https://www.linkedin.com/in/diego-%C3%A1lvarez-medrano/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+              >
+                Diego Álvarez Medrano
+              </a>
             </p>
           </div>
         </footer>

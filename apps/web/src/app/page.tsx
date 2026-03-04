@@ -10,10 +10,10 @@ export default function HomePage() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            OmniConvert v2.0 🚀 TEST
+            OmniConvert
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Universal file conversion made simple and secure [DEPLOYMENT TEST]
+            Universal file conversion made simple and secure
           </p>
           <div className="inline-flex gap-4">
             <Link
