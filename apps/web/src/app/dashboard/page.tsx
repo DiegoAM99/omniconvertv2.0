@@ -97,7 +97,7 @@ export default function DashboardPage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 py-8">
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">

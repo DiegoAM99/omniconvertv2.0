@@ -46,7 +46,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white px-4">
+    <div className="flex items-center justify-center bg-gradient-to-b from-blue-50 to-white px-4 py-12">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h2 className="text-4xl font-bold text-gray-900">OmniConvert</h2>
