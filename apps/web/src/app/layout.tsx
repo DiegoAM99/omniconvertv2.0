@@ -3,7 +3,7 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'OmniConvert - Universal File Conversion Platform',
+  title: 'OmniConvert v2.0 - DEPLOYMENT TEST',
   description: 'Convert documents, images, audio, and video files with intelligent format detection.',
 };
 
