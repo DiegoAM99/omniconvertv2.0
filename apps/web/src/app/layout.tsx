@@ -5,6 +5,9 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   title: 'OmniConvert - Universal File Conversion Platform',
   description: 'Convert documents, images, audio, and video files with intelligent format detection.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
