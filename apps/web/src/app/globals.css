@@ -53,14 +53,10 @@
 }
 
 body {
+  color: rgb(var(--foreground-rgb));
   background: linear-gradient(135deg, 
     rgb(var(--background-start)) 0%, 
     rgb(var(--background-middle)) 50%, 
     rgb(var(--background-end)) 100%);
   background-attachment: fixed;
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
 }
