@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from './providers';
-import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'OmniConvert - Universal File Conversion Platform',
@@ -16,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <Providers>
-          <div className="flex-grow">{children}</div>
-          <Footer />
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
