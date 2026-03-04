@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <body className="font-sans antialiased flex flex-col min-h-screen bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100">
         <Providers>
           <main className="flex-grow">{children}</main>
         </Providers>
