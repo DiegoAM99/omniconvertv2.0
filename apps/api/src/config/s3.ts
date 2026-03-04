@@ -11,11 +11,12 @@ function getS3Config() {
     },
   };
 
-  // Use LocalStack in development
-  if (process.env.NODE_ENV === 'development' || process.env.USE_LOCALSTACK === 'true') {
-    s3Config.endpoint = process.env.S3_ENDPOINT || 'http://localhost:4566';
-    s3Config.forcePathStyle = true; // Required for LocalStack
-    console.log('S3 Client Config: Using LocalStack endpoint:', s3Config.endpoint);
+  // Use custom endpoint (LocalStack for dev, Cloudflare R2 for production)
+  const endpoint = process.env.AWS_ENDPOINT_URL || process.env.S3_ENDPOINT;
+  if (endpoint) {
+    s3Config.endpoint = endpoint;
+    s3Config.forcePathStyle = true; // Required for LocalStack and R2
+    console.log('S3 Client Config: Using custom endpoint:', endpoint);
   } else {
     console.log('S3 Client Config: Using AWS S3');
   }
