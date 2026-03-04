@@ -140,15 +140,15 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
         />
       ) : selectedFile ? (
         /* File Selected View */
-        <div className="border-2 border-blue-500 rounded-xl p-8 bg-blue-50">
+        <div className="border-2 border-blue-500 dark:border-blue-400 rounded-xl p-8 bg-blue-50 dark:bg-slate-800">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center space-x-4 flex-1">
               <div className="text-5xl">📄</div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 break-all">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white break-all">
                   {selectedFile.name}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   {formatBytes(selectedFile.size)}
                 </p>
               </div>
@@ -158,7 +158,7 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
                 setSelectedFile(null);
                 setSelectedFormat('');
               }}
-              className="text-gray-500 hover:text-red-600 transition ml-4"
+              className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition ml-4"
               title="Remove file"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,13 +169,13 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Convert to:
               </label>
               <select
                 value={selectedFormat}
                 onChange={(e) => setSelectedFormat(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
               >
                 <option value="">Auto-detect best format</option>
                 <optgroup label="Documents">
@@ -206,7 +206,7 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
             <button
               onClick={handleConvert}
               disabled={uploading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 dark:bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading 
                 ? `Converting... ${Math.round(uploadProgress)}%` 
@@ -215,9 +215,9 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
             </button>
 
             {uploading && (
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
                 <div
-                  className="bg-blue-600 h-2 rounded-full transition-all"
+                  className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
@@ -230,7 +230,7 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-xl p-16 text-center transition cursor-pointer relative
-              ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}
+              ${isDragActive ? 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-slate-800' : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'}
               ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
             style={{ minHeight: '300px' }}
           >
@@ -239,13 +239,13 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
             {uploading ? (
               <div>
                 <div className="text-6xl mb-4">⏳</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   Uploading... {Math.round(uploadProgress)}%
                 </h3>
                 <div className="max-w-md mx-auto mt-4">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full transition-all"
+                      className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
@@ -254,21 +254,21 @@ export default function UploadZone({ onUploadComplete, onError }: UploadZoneProp
             ) : (
               <>
                 <div className="text-6xl mb-4">📁</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   {isDragActive ? 'Drop your file here' : 'Drag & drop your file here'}
                 </h3>
-                <p className="text-gray-600 mb-4">or click anywhere in this box to browse</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">or click anywhere in this box to browse</p>
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     open();
                   }}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                  className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition font-medium"
                 >
                   Browse Files
                 </button>
-                <p className="text-sm text-gray-500 mt-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
                   Supports: PDF, DOCX, JPG, PNG, MP3, MP4, and 20+ more formats
                 </p>
               </>
