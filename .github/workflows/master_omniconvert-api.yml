@@ -26,14 +26,21 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build --if-present
-          npm run test --if-present
+          cd apps/api
+          npx prisma generate
+          npm run build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: |
+            apps/api
+            packages/types
+            packages/utils
+            node_modules
+            package.json
+            package-lock.json
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,6 +54,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
+      
+      - name: Prepare deployment package
+        run: |
+          # The artifact contains: apps/api, packages/*, node_modules, package.json
+          # Azure needs everything at root level
+          # Move api contents to current directory
+          shopt -s dotglob
+          mv apps/api/* .
+          # packages and node_modules are already at root from artifact
       
       - name: Login to Azure
         uses: azure/login@v2

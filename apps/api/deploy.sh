@@ -7,9 +7,15 @@ set -e
 
 echo "Starting deployment..."
 
-# Install dependencies
-echo "Installing dependencies..."
-npm install
+# Navigate to workspace root
+cd ../..
+
+# Install workspace dependencies
+echo "Installing workspace dependencies..."
+npm install --workspace=apps/api --workspace=packages/types --workspace=packages/utils
+
+# Navigate to API folder
+cd apps/api
 
 # Generate Prisma Client
 echo "Generating Prisma Client..."
