@@ -7,7 +7,10 @@ import { QUOTA_LIMITS, ANONYMOUS_QUOTA_LIMITS, getFormatFromExtension } from '@o
 import { addConversionJob } from '../queues/conversion.queue';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getS3Client, UPLOADS_BUCKET } from '../config/s3';
+import * as azureStorage from '../services/azure-storage.service';
 import { v4 as uuidv4 } from 'uuid';
+
+const USE_AZURE = process.env.USE_AZURE_STORAGE === 'true';
 
 // Initialize upload - get presigned URL
 export const initializeUpload = async (req: Request, res: Response, next: NextFunction) => {
@@ -286,25 +289,36 @@ export const directUpload = async (req: Request, res: Response, next: NextFuncti
       }
     }
 
-    // Upload to S3
+    // Upload to storage (Azure or S3)
     const fileId = uuidv4();
     const sanitizedFileName = sanitizeFileName(file.originalname);
     const userPrefix = userId || 'anonymous';
     const fileKey = `uploads/${userPrefix}/${fileId}/${sanitizedFileName}`;
 
-    const command = new PutObjectCommand({
-      Bucket: UPLOADS_BUCKET,
-      Key: fileKey,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-      Metadata: {
-        userId: userId || 'anonymous',
-        originalFileName: file.originalname,
-        uploadedAt: new Date().toISOString(),
-      },
-    });
+    if (USE_AZURE) {
+      // Upload to Azure Blob Storage
+      await azureStorage.uploadFile(
+        azureStorage.UPLOADS_CONTAINER,
+        fileKey,
+        file.buffer,
+        file.mimetype
+      );
+    } else {
+      // Upload to S3
+      const command = new PutObjectCommand({
+        Bucket: UPLOADS_BUCKET,
+        Key: fileKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        Metadata: {
+          userId: userId || 'anonymous',
+          originalFileName: file.originalname,
+          uploadedAt: new Date().toISOString(),
+        },
+      });
 
-    await getS3Client().send(command);
+      await getS3Client().send(command);
+    }
 
     // Create conversion record
     const expiresAt = new Date();

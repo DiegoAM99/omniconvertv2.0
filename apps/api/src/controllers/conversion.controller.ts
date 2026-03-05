@@ -2,7 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
 import { ConversionService } from '../services/conversion.service';
 import { generateDownloadUrl } from '../services/s3.service';
+import * as azureStorage from '../services/azure-storage.service';
 import { AppError } from '../middleware/error-handler';
+
+const USE_AZURE = process.env.USE_AZURE_STORAGE === 'true';
 
 // Get conversion details
 export const getConversion = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,8 +29,16 @@ export const getConversion = async (req: Request, res: Response, next: NextFunct
     // Generate download URL if completed
     let downloadUrl = null;
     if (conversion.status === 'completed' && conversion.outputFileUrl) {
-      const urlData = await generateDownloadUrl(conversion.outputFileUrl);
-      downloadUrl = urlData.downloadUrl;
+      if (USE_AZURE) {
+        downloadUrl = await azureStorage.generateDownloadUrl(
+          azureStorage.OUTPUTS_CONTAINER,
+          conversion.outputFileUrl,
+          60
+        );
+      } else {
+        const urlData = await generateDownloadUrl(conversion.outputFileUrl);
+        downloadUrl = urlData.downloadUrl;
+      }
     }
 
     res.json({
@@ -165,10 +176,20 @@ export const downloadConversion = async (req: Request, res: Response, next: Next
     }
 
     // Generate presigned download URL
-    const urlData = await generateDownloadUrl(conversion.outputFileUrl);
+    let downloadUrl: string;
+    if (USE_AZURE) {
+      downloadUrl = await azureStorage.generateDownloadUrl(
+        azureStorage.OUTPUTS_CONTAINER,
+        conversion.outputFileUrl,
+        60
+      );
+    } else {
+      const urlData = await generateDownloadUrl(conversion.outputFileUrl);
+      downloadUrl = urlData.downloadUrl;
+    }
 
-    // Redirect to S3 download URL
-    res.redirect(urlData.downloadUrl);
+    // Redirect to download URL
+    res.redirect(downloadUrl);
   } catch (error) {
     next(error);
   }

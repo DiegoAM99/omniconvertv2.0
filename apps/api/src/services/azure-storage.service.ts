@@ -18,8 +18,8 @@ function getBlobServiceClient(): BlobServiceClient {
   return _blobServiceClient;
 }
 
-const UPLOADS_CONTAINER = process.env.AZURE_STORAGE_UPLOADS_CONTAINER || 'uploads';
-const OUTPUTS_CONTAINER = process.env.AZURE_STORAGE_OUTPUTS_CONTAINER || 'outputs';
+const UPLOADS_CONTAINER = process.env.AZURE_STORAGE_UPLOADS_CONTAINER || process.env.S3_UPLOADS_BUCKET || 'uploads';
+const OUTPUTS_CONTAINER = process.env.AZURE_STORAGE_OUTPUTS_CONTAINER || process.env.S3_OUTPUTS_BUCKET || 'outputs';
 
 export async function uploadFile(
   containerName: string,

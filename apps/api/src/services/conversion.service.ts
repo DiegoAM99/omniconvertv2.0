@@ -5,6 +5,9 @@ import { ProcessorFactory, ConversionOptions } from '../processors/processor.fac
 import { FileFormat } from '@omniconvert/types';
 import { logger } from '../config/logger';
 import { Readable } from 'stream';
+import * as azureStorage from './azure-storage.service';
+
+const USE_AZURE = process.env.USE_AZURE_STORAGE === 'true';
 
 export class ConversionService {
   static async processConversion(
@@ -31,11 +34,13 @@ export class ConversionService {
 
       const startTime = Date.now();
 
-      // Download input file from S3
+      // Download input file from storage (Azure or S3)
       if (progressCallback) {
         await progressCallback('downloading', 20);
       }
-      const inputBuffer = await this.downloadFromS3(UPLOADS_BUCKET, conversion.inputFileUrl);
+      const inputBuffer = USE_AZURE 
+        ? await this.downloadFromAzure(conversion.inputFileUrl)
+        : await this.downloadFromS3(UPLOADS_BUCKET, conversion.inputFileUrl);
 
       // Perform conversion
       if (progressCallback) {
@@ -48,16 +53,13 @@ export class ConversionService {
         conversion.options as ConversionOptions
       );
 
-      // Upload output file to S3
+      // Upload output file to storage (Azure or S3)
       if (progressCallback) {
         await progressCallback('uploading', 80);
       }
-      const outputFileUrl = await this.uploadToS3(
-        OUTPUTS_BUCKET,
-        outputBuffer,
-        conversionId,
-        conversion.outputFormat
-      );
+      const outputFileUrl = USE_AZURE
+        ? await this.uploadToAzure(outputBuffer, conversionId, conversion.outputFormat)
+        : await this.uploadToS3(OUTPUTS_BUCKET, outputBuffer, conversionId, conversion.outputFormat);
 
       const processingTime = Date.now() - startTime;
 
@@ -150,6 +152,45 @@ export class ConversionService {
     } catch (error: any) {
       logger.error('Failed to upload to S3', error);
       throw new Error(`S3 upload failed: ${error.message}`);
+    }
+  }
+
+  private static async downloadFromAzure(blobKey: string): Promise<Buffer> {
+    try {
+      logger.info(`Attempting Azure download - Blob: ${blobKey}`);
+      
+      // Extract container and blob name from the key
+      // Format: uploads/userPrefix/fileId/filename
+      const buffer = await azureStorage.downloadFile(azureStorage.UPLOADS_CONTAINER, blobKey);
+      
+      logger.info(`Successfully downloaded from Azure Blob Storage`);
+      return buffer;
+    } catch (error: any) {
+      logger.error(`Failed to download from Azure: ${blobKey}`, error);
+      throw new Error(`Azure download failed: ${error.message}`);
+    }
+  }
+
+  private static async uploadToAzure(
+    buffer: Buffer,
+    conversionId: string,
+    format: string
+  ): Promise<string> {
+    try {
+      const key = `outputs/${conversionId}/output.${format}`;
+      
+      await azureStorage.uploadFile(
+        azureStorage.OUTPUTS_CONTAINER,
+        key,
+        buffer,
+        this.getContentType(format)
+      );
+
+      logger.info(`Uploaded output to Azure: ${key}`);
+      return key;
+    } catch (error: any) {
+      logger.error('Failed to upload to Azure', error);
+      throw new Error(`Azure upload failed: ${error.message}`);
     }
   }
 
